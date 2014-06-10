@@ -4,5 +4,6 @@ module UDPBucket
  require 'socket'
  require 'thread'
  require 'ipaddr'
+ require 'udpbucket/log'
  require 'udpbucket/core'
 end

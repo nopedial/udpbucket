@@ -1,23 +1,26 @@
 module UDPBucket
   class Core
+    require 'asetus'
 
-    def initialize cfg
-      @cfg              = cfg
-      @debug            = @cfg[:debug]
-      @localhost        = @cfg[:localhost] || '0.0.0.0'
-      @localport        = @cfg[:localport] || 16265
+    def initialize usercfg
+      cfgs = Asetus.new :name=>'udpbucket', :load=>false
+      cfgs.default.debug      = usercfg[:debug] || 1
+      cfgs.default.localhost  = usercfg[:localhost] || '0.0.0.0'
+      cfgs.default.localport  = usercfg[:localport] || 16265
+      cfgs.load
+      @cfg = cfgs.cfg
+      load
+    end
+
+    def load
       @rx_queue         = Queue.new
-      if IPAddr.new(@localhost).ipv6?
+      if IPAddr.new(@cfg.localhost).ipv6?
         @sock           = UDPSocket.new Socket::AF_INET6
       else
         @sock           = UDPSocket.new
       end
-      @sock.bind @localhost, @localport
-      debug "udpbucket server up: #{@localhost}:#{@localport}" if @debug == 1
-    end
-
-    def debug msg
-      puts [ "D, [#{Time.now} ", [ "#", "#{Process.pid}" ].join, "] DEBUG -- ", msg ].join 
+      @sock.bind @cfg.localhost, @cfg.localport
+      Log.debug "udpbucket server up: #{@cfg.localhost}:#{@cfg.localport}" if @cfg.debug == 1
     end
 
     def listen
@@ -28,7 +31,7 @@ module UDPBucket
             buffer, sockaddr = @sock.recvfrom_nonblock(1500)
             pkt = { :client_sock => @sock, :client_ip => sockaddr[3], :client_port => sockaddr[1], :payload => buffer }
 	    @rx_queue << pkt
-            debug "packet queued (queue size:#{@rx_queue.size}): #{pkt}" if @debug == 1
+            Log.debug "packet queued (queue size:#{@rx_queue.size}): #{pkt}" if @cfg.debug == 1
           end
         end
       end
@@ -36,7 +39,7 @@ module UDPBucket
         while true do
           begin
             yield @rx_queue.pop
-            debug "yield to block (queue size:#{@rx_queue.size})" if @debug == 1
+            Log.debug "yield to block (queue size:#{@rx_queue.size})" if @cfg.debug == 1
           end
         end
       end
