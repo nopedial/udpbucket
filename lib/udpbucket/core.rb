@@ -2,9 +2,9 @@ module UDPBucket
   class Core
     require 'asetus'
 
-    def initialize usercfg
+    def initialize usercfg={}
       cfgs = Asetus.new :name=>'udpbucket', :load=>false
-      cfgs.default.debug      = usercfg[:debug] || 1
+      cfgs.default.debug      = usercfg[:debug] || 0
       cfgs.default.localhost  = usercfg[:localhost] || '0.0.0.0'
       cfgs.default.localport  = usercfg[:localport] || 16265
       cfgs.load
