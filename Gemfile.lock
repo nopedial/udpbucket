@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    udpbucket (0.0.8)
+      json
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    json (1.8.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  udpbucket!
