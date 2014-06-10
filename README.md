@@ -42,4 +42,4 @@ UDPBucket returns to a block each packet it receives to the listening UDP port f
 
 ## configuration:
 
-The configuration is loaded at the start via Asetus. If the configuration is not passed to the 'Core' class, Asetus will load the default set (localhost:0.0.0.0,localport:16265,debug:1)
+The configuration is loaded at the start via Asetus. If the configuration is not passed to the 'Core' class, Asetus will load the default set (localhost:'0.0.0.0',localport:'16265',debug:'0')
