@@ -20,7 +20,7 @@ module UDPBucket
         @sock           = UDPSocket.new
       end
       @sock.bind @cfg.localhost, @cfg.localport
-      Log.debug "udpbucket server up: #{@cfg.localhost}:#{@cfg.localport}" if @cfg.debug == 1
+      debug "udpbucket server up: #{@cfg.localhost}:#{@cfg.localport}" if @cfg.debug == 1
     end
 
     def listen
@@ -31,7 +31,7 @@ module UDPBucket
             buffer, sockaddr = @sock.recvfrom_nonblock(1500)
             pkt = { :client_sock => @sock, :client_ip => sockaddr[3], :client_port => sockaddr[1], :payload => buffer }
 	    @rx_queue << pkt
-            Log.debug "packet queued (queue size:#{@rx_queue.size}): #{pkt}" if @cfg.debug == 1
+            debug "packet queued (queue size:#{@rx_queue.size}): #{pkt}" if @cfg.debug == 1
           end
         end
       end
@@ -39,11 +39,15 @@ module UDPBucket
         while true do
           begin
             yield @rx_queue.pop
-            Log.debug "yield to block (queue size:#{@rx_queue.size})" if @cfg.debug == 1
+            debug "yield to block (queue size:#{@rx_queue.size})" if @cfg.debug == 1
           end
         end
       end
       consumer.join
+    end
+
+    def debug output
+      Log.debug output if @cfg.debug == 1
     end
 
   end
